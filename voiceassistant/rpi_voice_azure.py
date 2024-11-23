@@ -39,7 +39,7 @@ try:
                 for keyword in KEYWORDS:
                     if keyword in command_text:
                         print(f"Detected keyword: {keyword}")
-                        azure_command_message = Message(json.dumps({"keyword" : keyword}))
+                        azure_command_message = Message(json.dumps(keyword))
                         azure_command_message.content_encoding='utf-8'
                         azure_command_message.content_type='application/json'
                         

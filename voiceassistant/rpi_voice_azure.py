@@ -4,8 +4,13 @@ import pyaudio
 import vosk
 import json
 
-
 from azure.iot.device import IoTHubDeviceClient, Message
+
+RESPEAKER_RATE = 16000
+RESPEAKER_CHANNELS = 2 
+RESPEAKER_WIDTH = 2
+RESPEAKER_INDEX = 0
+CHUNK = 1024
 
 CONNECTION_STRING = "HostName=icaiiiotlabrmg.azure-devices.net;DeviceId=voiceCommands;SharedAccessKey=ajbL79dL9cLnhSydsU3h3i5I7lB5AfwEP/MQk7ltcGk="
 KEYWORDS = ["temperatura", "luminosidad", "distancia", "humedad"]
@@ -23,7 +28,7 @@ model = vosk.Model(folder_path)
 recognizer = vosk.KaldiRecognizer(model, 16000)
 
 mic = pyaudio.PyAudio()
-stream = mic.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=8000)
+stream = mic.open(format=mic.get_format_from_width(RESPEAKER_WIDTH),channels=RESPEAKER_CHANNELS, rate=RESPEAKER_RATE, input=True, input_device_index=RESPEAKER_INDEX)
 stream.start_stream()
 try:
     while True:

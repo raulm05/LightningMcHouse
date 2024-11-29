@@ -4,14 +4,8 @@ import pyaudio
 import vosk
 import json
 
-from azure.iot.device import IoTHubDeviceClient, Message
 
-RESPEAKER_RATE = 16000
-RESPEAKER_CHANNELS = 2 
-RESPEAKER_WIDTH = 2
-RESPEAKER_INDEX = 0
-CHUNK = 2048
-RECORD_SECONDS = 5
+from azure.iot.device import IoTHubDeviceClient, Message
 
 CONNECTION_STRING = "HostName=icaiiiotlabrmg.azure-devices.net;DeviceId=voiceCommands;SharedAccessKey=ajbL79dL9cLnhSydsU3h3i5I7lB5AfwEP/MQk7ltcGk="
 KEYWORDS = ["temperatura", "luminosidad", "distancia", "humedad"]
@@ -29,18 +23,11 @@ model = vosk.Model(folder_path)
 recognizer = vosk.KaldiRecognizer(model, 16000)
 
 mic = pyaudio.PyAudio()
-stream = mic.open(
-            rate=RESPEAKER_RATE,
-            format=mic.get_format_from_width(RESPEAKER_WIDTH),
-            channels=RESPEAKER_CHANNELS,
-            input=True,
-            input_device_index=RESPEAKER_INDEX,
-            frames_per_buffer=CHUNK)
+stream = mic.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=8000)
 stream.start_stream()
-print("Speak!")
 try:
     while True:
-        data = stream.read(CHUNK, exception_on_overflow=False)
+        data = stream.read(4000, exception_on_overflow=False)
         if recognizer.AcceptWaveform(data):
             result = recognizer.Result()
             result_dict = json.loads(result)
@@ -52,7 +39,7 @@ try:
                 for keyword in KEYWORDS:
                     if keyword in command_text:
                         print(f"Detected keyword: {keyword}")
-                        azure_command_message = Message(json.dumps(keyword))
+                        azure_command_message = Message(json.dumps({"keyword" : keyword}))
                         azure_command_message.content_encoding='utf-8'
                         azure_command_message.content_type='application/json'
                         

@@ -8,7 +8,7 @@ import json
 from azure.iot.device import IoTHubDeviceClient, Message
 
 CONNECTION_STRING = "HostName=icaiiiotlabrmg.azure-devices.net;DeviceId=voiceCommands;SharedAccessKey=ajbL79dL9cLnhSydsU3h3i5I7lB5AfwEP/MQk7ltcGk="
-KEYWORDS = ["temperatura", "luminosidad", "distancia", "humedad"]
+KEYWORDS = ["fiesta", "peligro", "mario", "abre", "cierra"]
 
 # Initialize Azure IoT Hub Client
 client = IoTHubDeviceClient.create_from_connection_string(CONNECTION_STRING)
@@ -39,7 +39,7 @@ try:
                 for keyword in KEYWORDS:
                     if keyword in command_text:
                         print(f"Detected keyword: {keyword}")
-                        azure_command_message = Message(json.dumps({"keyword" : keyword}))
+                        azure_command_message = Message(json.dumps({"command" : keyword}))
                         azure_command_message.content_encoding='utf-8'
                         azure_command_message.content_type='application/json'
                         
